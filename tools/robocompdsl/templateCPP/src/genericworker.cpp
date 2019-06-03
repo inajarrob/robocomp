@@ -219,7 +219,11 @@ if component['gui'] != 'none':
 ]]]
 [[[end]]]
 	Period = BASIC_PERIOD;
-	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+[[[cog
+if component['statemachine'] is 'none':
+	cog.outl("<TABHERE>connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
+]]]
+[[[end]]]
 
 }
 

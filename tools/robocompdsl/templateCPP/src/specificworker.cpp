@@ -251,18 +251,18 @@ else:
 		for state in sm['machine']['contents']['states']:
 			implementationfun += "void SpecificWorker::fun_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
 	if sm['machine']['contents']['initialstate'] != "none":
-		implementationfun += "void SpecificWorker::fun_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+state+"\"<<std::endl;\n}\n\n"
+		implementationfun += "void SpecificWorker::fun_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate'][0]+"\"<<std::endl;\n}\n\n"
 	if sm['machine']['contents']['finalstate'] != "none":
-		implementationfun += "void SpecificWorker::fun_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+state+"\"<<std::endl;\n}\n\n"
+		implementationfun += "void SpecificWorker::fun_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'][0] +"\"<<std::endl;\n}\n\n"
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
 			if substates['contents']['states'] is not "none":
 				for state in substates['contents']['states']:
 					implementationfun += "void SpecificWorker::fun_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
 			if substates['contents']['initialstate'] != "none":
-				implementationfun += "void SpecificWorker::fun_" + substates['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
+				implementationfun += "void SpecificWorker::fun_" + substates['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['initialstate']+"\"<<std::endl;\n}\n\n"
 			if substates['contents']['finalstate'] != "none":
-				implementationfun += "void SpecificWorker::fun_" + substates['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
+				implementationfun += "void SpecificWorker::fun_" + substates['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['finalstate']+"\"<<std::endl;\n}\n\n"
 	cog.outl(implementationfun)
 
 if component['usingROS'] == True:
