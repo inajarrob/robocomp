@@ -164,10 +164,31 @@ Component <CHANGETHECOMPONENTNAME>
 	gui Qt(QWidget//QDialog//QMainWindow);
 	//options agmagent;
 	//options InnerModelViewer;
+	statemachine "statemachine.smdsl";
 };\n\n"""
+	stringstatemachine = """name_machine{
+    [states name_state *[, name_state];]
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transition{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};
+
+[:parent_state [parallel]{
+    states name_state *[, name_state];
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transition{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};]"""
         name = path.split('/')[-1].split('.')[0]
         string = string.replace('<CHANGETHECOMPONENTNAME>', name)
         open(path, "w").write(string)
+	open("statemachine.smdsl", "w").write(stringstatemachine)
 
 def get_diff_tool(prefered=None):
     if prefered in DIFF_TOOLS:

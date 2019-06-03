@@ -13,8 +13,10 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
+from parseSMDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+sm = SMDSLparsing.fromFile(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -198,9 +200,33 @@ if 'subscribesTo' in component:
 [[[end]]]
 
 public slots:
-	void compute();
-	void initialize(int period);
-
+[[[cog
+if component['statemachine'] != 'none':
+    specificationfun = ""
+    if sm['machine']['contents']['states'] is not "none":
+        for state in sm['machine']['contents']['states']:
+            specificationfun += "<TABHERE>void fun_" + state + "();\n"
+    if sm['machine']['contents']['initialstate'] != "none":
+        specificationfun += "<TABHERE>void fun_" + sm['machine']['contents']['initialstate'][0] + "();\n"
+    if sm['machine']['contents']['finalstate'] != "none":
+        specificationfun += "<TABHERE>void fun_" + sm['machine']['contents']['finalstate'][0] + "();\n"
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            if substates['contents']['states'] is not "none":
+                for state in substates['contents']['states']:
+                    specificationfun += "<TABHERE>void fun_" + state + "();\n"
+            if substates['contents']['initialstate'] != "none":
+                specificationfun += "<TABHERE>void fun_" + substates['contents']['initialstate'] + "();\n"
+            if substates['contents']['finalstate'] != "none":
+                specificationfun += "<TABHERE>void fun_" + substates['contents']['finalstate'] + "();\n"
+    cog.outl("//Specification slot funtions State Machine")
+    cog.outl(specificationfun)
+    cog.outl("//--------------------")
+else:
+    cog.outl("void compute();")
+    cog.outl("void initialize(int period);")
+]]]
+[[[end]]]
 private:
 	std::shared_ptr<InnerModel> innerModel;
 [[[cog
