@@ -17,6 +17,8 @@ from parseSMDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 sm = SMDSLparsing.fromFile(component['statemachine'])
+if sm is 'none':
+    component['statemachine'] = 'none'  
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -167,6 +169,11 @@ except:
 SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
+[[[cog
+if component['statemachine'] is not 'none' and sm['machine']['default']:
+	cog.outl("<TABHERE>emit computetofinalize();")
+]]]
+[[[end]]]
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -221,49 +228,58 @@ except:
 	return true;
 }
 
+void SpecificWorker::initialize(int period)
+{
+	std::cout << "Initialize worker" << std::endl;
+	this->Period = period;
+	timer.start(Period);
 [[[cog
-if component['statemachine'] is 'none':
-	cog.outl("void SpecificWorker::initialize(int period)")
-	cog.outl("{")
-	cog.outl("	std::cout << \"Initialize worker\" << std::endl;")
-	cog.outl("	this->Period = period;")
-	cog.outl("	timer.start(Period);")
-	cog.outl("}")
-	cog.outl("\n")
-	cog.outl("void SpecificWorker::compute()")
-	cog.outl("{")
-	cog.outl("<TABHERE>//computeCODE")
-	cog.outl("//<TABHERE>QMutexLocker locker(mutex); ")
-	cog.outl("//<TABHERE>try")
-	cog.outl("//<TABHERE>{")
-	cog.outl("//<TABHERE><TABHERE>camera_proxy->getYImage(0,img, cState, bState);")
-	cog.outl("//<TABHERE><TABHERE>memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));")
-	cog.outl("//<TABHERE><TABHERE>searchTags(image_gray);")
-	cog.outl("//<TABHERE>}")
-	cog.outl("//<TABHERE>catch(const Ice::Exception &e)")
-	cog.outl("//<TABHERE>{")
-	cog.outl("//<TABHERE><TABHERE>std::cout << \"Error reading from Camera\" << e << std::endl;")
-	cog.outl("//<TABHERE>}")
-	cog.outl("}")
-else:
-	implementationfun = "\n"
+if component['statemachine'] is not 'none' and sm['machine']['default']:
+    cog.outl("<TABHERE>emit this->initializetocompute();")
+    ]]]
+[[[end]]]
+
+}
+
+void SpecificWorker::compute()
+{
+//computeCODE
+//QMutexLocker locker(mutex);
+//	try
+//	{
+//		camera_proxy->getYImage(0,img, cState, bState);
+//		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
+//		searchTags(image_gray);
+//	}
+//	catch(const Ice::Exception &e)
+//	{
+//		std::cout << \"Error reading from Camera\" << e << std::endl;
+//	}
+}
+
+[[[cog
+if component['statemachine'] is not 'none':
+	sm_implementation = "\n"
 	if sm['machine']['contents']['states'] is not "none":
 		for state in sm['machine']['contents']['states']:
-			implementationfun += "void SpecificWorker::fun_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
+		    if sm['machine']['default'] and state == 'compute':
+		        sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n<TABHERE>compute();\n}\n\n"
+		    else:
+			    sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
 	if sm['machine']['contents']['initialstate'] != "none":
-		implementationfun += "void SpecificWorker::fun_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate'][0]+"\"<<std::endl;\n}\n\n"
+		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate'][0]+"\"<<std::endl;\n}\n\n"
 	if sm['machine']['contents']['finalstate'] != "none":
-		implementationfun += "void SpecificWorker::fun_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'][0] +"\"<<std::endl;\n}\n\n"
+		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'][0] +"\"<<std::endl;\n}\n\n"
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
 			if substates['contents']['states'] is not "none":
 				for state in substates['contents']['states']:
-					implementationfun += "void SpecificWorker::fun_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
+					sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
 			if substates['contents']['initialstate'] != "none":
-				implementationfun += "void SpecificWorker::fun_" + substates['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['initialstate']+"\"<<std::endl;\n}\n\n"
+				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['initialstate']+"\"<<std::endl;\n}\n\n"
 			if substates['contents']['finalstate'] != "none":
-				implementationfun += "void SpecificWorker::fun_" + substates['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['finalstate']+"\"<<std::endl;\n}\n\n"
-	cog.outl(implementationfun)
+				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['finalstate']+"\"<<std::endl;\n}\n\n"
+	cog.outl(sm_implementation)
 
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::spinOnce();")
