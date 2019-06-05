@@ -6,6 +6,21 @@ import sys, traceback, os
 
 
 
+class BColors(str):
+    """ Class to print with colors on stdout"""
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+    def __new__(cls, value, type):
+        obj = type+str.__new__(cls, value)+cls.ENDC
+        return obj
+
 
 
 class SMDSLparsing:
@@ -15,21 +30,25 @@ class SMDSLparsing:
         # inputText = "\n".join([line for line in open(filename, 'r').read().split("\n") if not line.lstrip(" \t").startswith('//')])
         if filename == "none":
             return "none"
-        inputText = open(filename, 'r').read()
+        try:
+            inputText = open(filename, 'r').read()
+        except:
+            return "none"
         try:
             ret = SMDSLparsing.fromString(inputText)
         except:
-            print 'Error reading', filename
+            print(BColors('Error parsing %s'%filename,BColors.FAIL))
             traceback.print_exc()
-            print 'Error reading', filename
-            sys.sys.exit(-1)
+            sys.exit(-1)
         ret['filename'] = filename
         return ret
 
     @staticmethod
     def fromString(inputText, verbose=False):
         if verbose: print 'Verbose:', verbose
-        text = nestedExpr("/*", "*/").suppress().transformString(inputText)
+
+        # TODO: remove. it's already done with SMDSL = machinelist.ignore(cppStyleComment)
+        # text = nestedExpr("/*", "*/").suppress().transformString(inputText)
 
         semicolon = Suppress(Word(";"))
         quote = Suppress(Word("\""))
@@ -48,7 +67,7 @@ class SMDSLparsing:
 
 #---parse Transitions
         transition = Group(identifier.setResultsName('src') + to + list_identifer.setResultsName('dest') + semicolon)
-        transitions = Group(Suppress(CaselessLiteral('transition')) + op + transition + ZeroOrMore(transition) + cl + semicolon).setResultsName('transition')
+        transitions = Group(Suppress(CaselessLiteral('transitions')) + op + transition + ZeroOrMore(transition) + cl + semicolon).setResultsName('transition')
 
 #---parse initialstate finalstate
         initialstate = (Suppress(CaselessLiteral('initial_state')) + identifier + semicolon).setResultsName('initialstate')
@@ -56,19 +75,19 @@ class SMDSLparsing:
 
 #---parse machine
         contents = stateslist | initialstate | finalstate | transitions
-        machinecontenido = Group(op + ZeroOrMore(contents) + cl + semicolon)
+        machine_content = Group(op + ZeroOrMore(contents) + cl + semicolon)
 
         parent = Suppress(Word(":")) + identifier
         parallel = CaselessLiteral('parallel')
-        substate = Group(parent.setResultsName('parent') + ZeroOrMore(parallel.setResultsName('parallel')) + machinecontenido.setResultsName("contents"))
-        machine = identifier.setResultsName("name") + machinecontenido.setResultsName("contents")
+        substate = Group(parent.setResultsName('parent') + ZeroOrMore(parallel.setResultsName('parallel')) + machine_content.setResultsName("contents"))
+        machine = identifier.setResultsName("name") + machine_content.setResultsName("contents")
 
 #---parse list machine
         machinelist = machine.setResultsName("machine") + ZeroOrMore(substate).setResultsName("substates")
 
         SMDSL = machinelist.ignore(cppStyleComment)
 
-        tree= SMDSL.parseString(text)
+        tree= SMDSL.parseString(inputText)
         return SMDSLparsing.component(tree)
 
     @staticmethod
@@ -76,6 +95,10 @@ class SMDSLparsing:
         component = {}
         component['machine'] = {}
         component['machine']['name'] = tree['machine']['name']
+        if component['machine']['name'] == "defaultMachine":
+            component['machine']['default'] = True
+        else:
+            component['machine']['default'] = False
         component['machine']['contents'] = {}
         try:
             component['machine']['contents']['states'] = tree['machine']['contents']['states']
