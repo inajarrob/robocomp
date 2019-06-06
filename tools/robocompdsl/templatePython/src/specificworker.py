@@ -12,8 +12,10 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
+from parseSMDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+sm = SMDSLparsing.fromFile(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -66,9 +68,21 @@ from genericworker import *
 class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
-		self.timer.timeout.connect(self.compute)
+[[[cog
+if sm is 'none':
+	cog.outl("<TABHERE><TABHERE>self.timer.timeout.connect(self.compute)")
+]]]
+[[[end]]]
 		self.Period = 2000
 		self.timer.start(self.Period)
+
+[[[cog
+if sm is not "none":
+	cog.outl("<TABHERE><TABHERE>self." + sm['machine']['name'] + ".start()")
+	if sm['machine']['default']:
+		cog.outl("<TABHERE><TABHERE>self.destroyed.connect(self.computetofinalize)")
+]]]
+[[[end]]]
 
 	def __del__(self):
 		print 'SpecificWorker destructor'
@@ -100,6 +114,37 @@ class SpecificWorker(GenericWorker):
 
 		return True
 
+[[[cog
+if sm is not 'none':
+	codVirtuals = ""
+	if sm['machine']['contents']['states'] is not "none":
+		for state in sm['machine']['contents']['states']:
+			if sm['machine']['default']:
+				if state == 'compute':
+					codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + state + "\")\n<TABHERE><TABHERE>self.compute()\n<TABHERE><TABHERE>pass\n\n"
+			else:
+				codVirtuals += "<TABHERE>#\n<TABHERE># 2sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + state + "\")\n<TABHERE><TABHERE>pass\n\n"
+	if sm['machine']['contents']['initialstate'] != "none":
+		if sm['machine']['default']:
+			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>self.initializetocompute.emit()\n<TABHERE><TABHERE>pass\n\n"
+		else:
+			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+sm['machine']['contents']['initialstate'][0]+"\")\n<TABHERE><TABHERE>pass\n\n"
+	if sm['machine']['contents']['finalstate'] != "none":
+		codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['finalstate'][0] + "<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['finalstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+sm['machine']['contents']['finalstate'][0]+"\")\n<TABHERE><TABHERE>pass\n\n"
+	if sm['substates'] != "none":
+		for substates in sm['substates']:
+			if substates['contents']['states'] is not "none":
+				for state in substates['contents']['states']:
+					codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+state+"\")\n<TABHERE><TABHERE>pass\n\n"
+			if substates['contents']['initialstate'] != "none":
+				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['initialstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['initialstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+substates['contents']['initialstate']+"\")\n<TABHERE><TABHERE>pass\n\n"
+			if substates['contents']['finalstate'] != "none":
+				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['finalstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['finalstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+substates['contents']['finalstate']+"\")\n<TABHERE><TABHERE>pass\n\n"
+	cog.outl("#Slots funtion State Machine")
+	cog.outl(codVirtuals)
+	cog.outl("#-------------------------")
+]]]
+[[[end]]]
 [[[cog
 lst = []
 try:

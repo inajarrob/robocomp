@@ -199,7 +199,7 @@ name_machine{
     [states name_state *[, name_state];]
     [initial_state name_state;]
     [end_state name_state;]
-    [transition{
+    [transitions{
         name_state => name_state *[, name_state];
         *[name_state => name_state *[, name_state];]
     };]
@@ -209,7 +209,7 @@ name_machine{
     states name_state *[, name_state];
     [initial_state name_state;]
     [end_state name_state;]
-    [transition{
+    [transitions{
         name_state => name_state *[, name_state];
         *[name_state => name_state *[, name_state];]
     };]
