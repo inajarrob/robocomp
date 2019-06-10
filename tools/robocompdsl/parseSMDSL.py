@@ -67,7 +67,7 @@ class SMDSLparsing:
 
 #---parse Transitions
         transition = Group(identifier.setResultsName('src') + to + list_identifer.setResultsName('dest') + semicolon)
-        transitions = Group(Suppress(CaselessLiteral('transitions')) + op + transition + ZeroOrMore(transition) + cl + semicolon).setResultsName('transition')
+        transitions = Group(Suppress(CaselessLiteral('transitions')) + op + transition + ZeroOrMore(transition) + cl + semicolon).setResultsName('transitions')
 
 #---parse initialstate finalstate
         initialstate = (Suppress(CaselessLiteral('initial_state')) + identifier + semicolon).setResultsName('initialstate')
@@ -116,16 +116,16 @@ class SMDSLparsing:
             for state in component['machine']['contents']['states']:
                 if component['machine']['contents']['initialstate'][0] == state:
                     print"Error: this initial state " + component['machine']['contents']['initialstate'][0] + " is in states"
-                     
+
             if component['machine']['contents']['finalstate'] != "none":
                 if component['machine']['contents']['initialstate'][0] == component['machine']['contents']['finalstate'][0]:
                     print"Error: initial state is equal final state"
         except:
             print "Error: The state machine needs initial state"
         try:
-            component['machine']['contents']['transition'] = tree['machine']['contents']['transition']
+            component['machine']['contents']['transitions'] = tree['machine']['contents']['transitions']
         except:
-            component['machine']['contents']['transition'] = "none"
+            component['machine']['contents']['transitions'] = "none"
         try:
             aux = tree['substates']
             component['substates'] = []
@@ -182,12 +182,13 @@ class SMDSLparsing:
                     except:
                         print"Error substate " + a['parent'] + " needs initial state"
                 try:
-                    a['contents']['transition'] = sub['contents']['transition']
+                    a['contents']['transitions'] = sub['contents']['transitions']
                 except:
-                    a['contents']['transition'] = "none"
+                    a['contents']['transitions'] = "none"
                 component['substates'].append(a)
 
         return component
 
-#if __name__ == '__main__':
-#	SMDSLparsing.fromFile(sys.argv[1])
+if __name__ == '__main__':
+	from pprint import pprint
+	pprint(SMDSLparsing.fromFile(sys.argv[1]))
