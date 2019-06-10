@@ -1,0 +1,27 @@
+/home/robolab/software/clion-2018.1.6/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/robocomp/robocomp/tools/rcinnerModelSimulator
+-- The C compiler identification is GNU 7.3.0
+-- The CXX compiler identification is GNU 7.3.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Error at src/CMakeLists.txt:39 (INCLUDE):
+  INCLUDE could not find load file:
+
+    /home/robocomp/robocomp/tools/rcinnerModelSimulator/cmake/robocompLocal.cmake
+
+
+CMake Error at src/CMakeLists.txt:40 (ROBOCOMP_INITIALIZE):
+  Unknown CMake command "ROBOCOMP_INITIALIZE".
+
+
+-- Configuring incomplete, errors occurred!
+See also "/home/robocomp/robocomp/tools/rcinnerModelSimulator/cmake-build-debug/CMakeFiles/CMakeOutput.log".

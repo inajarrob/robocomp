@@ -271,14 +271,14 @@ Z()
 [[[cog
 if sm != 'none':
     codsignals = ""
-    if sm['machine']['contents']['transition'] != "none":
-        for transi in sm['machine']['contents']['transition']:
+    if sm['machine']['contents']['transitions'] != "none":
+        for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dest']:
                 codsignals += "<TABHERE>" + transi['src'] + "to" + dest + " = QtCore.Signal()\n"
     if sm['substates']!="none":
         for substates in sm['substates']:
-            if substates['contents']['transition'] != "none":
-                for transi in substates['contents']['transition']:
+            if substates['contents']['transitions'] != "none":
+                for transi in substates['contents']['transitions']:
                     for dest in transi['dest']:
                         codsignals += "<TABHERE>" + transi['src'] + "to" + dest + " = QtCore.Signal()\n"
     cog.outl("#Signals for State Machine")
@@ -424,14 +424,14 @@ if sm != 'none':
 	codaddState = ""
 	codConnect = ""
 	codsetInitialState = ""
-	if sm['machine']['contents']['transition'] != "none":
-		for transi in sm['machine']['contents']['transition']:
+	if sm['machine']['contents']['transitions'] != "none":
+		for transi in sm['machine']['contents']['transitions']:
 			for dest in transi['dest']:
 				codaddTransition += "<TABHERE><TABHERE>self." + transi['src'] + "_state.addTransition(self." + transi['src'] + "to" + dest+", self." + dest + "_state)\n"
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
-			if substates['contents']['transition'] != "none":
-				for transi in substates['contents']['transition']:
+			if substates['contents']['transitions'] != "none":
+				for transi in substates['contents']['transitions']:
 					for dest in transi['dest']:
 						codaddTransition += "<TABHERE><TABHERE>self." + transi['src'] + "_state.addTransition(self." + transi['src'] + "to" + dest+", self." + dest + "_state)\n"
 	for state in sm['machine']['contents']['states']:

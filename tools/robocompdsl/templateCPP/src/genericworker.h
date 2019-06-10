@@ -661,14 +661,14 @@ signals:
 [[[cog
 if component['statemachine'] != 'none':
     codsignals = ""
-    if sm['machine']['contents']['transition'] != "none":
-        for transi in sm['machine']['contents']['transition']:
+    if sm['machine']['contents']['transitions'] != "none":
+        for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dest']:
                 codsignals += "<TABHERE>void " +  transi['src'] + "to" + dest + "();\n"
     if sm['substates']!="none":
         for substates in sm['substates']:
-            if substates['contents']['transition'] != "none":
-                for transi in substates['contents']['transition']:
+            if substates['contents']['transitions'] != "none":
+                for transi in substates['contents']['transitions']:
                     for dest in transi['dest']:
                         codsignals += "<TABHERE>void " + transi['src'] + "to" + dest + "();\n"
     cog.outl("//Signals for State Machine")
