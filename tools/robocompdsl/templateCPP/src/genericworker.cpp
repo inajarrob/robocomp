@@ -83,14 +83,14 @@ if component['statemachine'] != 'none':
     codConnect = ""
     codsetInitialState = ""
     states = ""
-    if sm['machine']['contents']['transition'] != "none":
-        for transi in sm['machine']['contents']['transition']:
+    if sm['machine']['contents']['transitions'] != "none":
+        for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dest']:
                 codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + "State);\n"
     if sm['substates'] != "none":
         for substates in sm['substates']:
-            if substates['contents']['transition'] != "none":
-                for transi in substates['contents']['transition']:
+            if substates['contents']['transitions'] != "none":
+                for transi in substates['contents']['transitions']:
                     for dest in transi['dest']:
                         codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + "State);\n"
     if sm['machine']['contents']['states'] is not "none":
@@ -114,7 +114,7 @@ if component['statemachine'] != 'none':
         for substates in sm['substates']:
             if substates['contents']['initialstate'] is not "none":
                 state = substates['contents']['initialstate']
-                codsetInitialState += "<TABHERE>" + substates['parent'] +  "->setInitialState(" + state +"State);\n"
+                codsetInitialState += "<TABHERE>" + substates['parent'] +  "State->setInitialState(" + state +"State);\n"
                 codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
                 states += state + ","
             if substates['contents']['finalstate'] is not "none":
