@@ -95,24 +95,28 @@ if sm is not "none":
 		#	print "Error reading config params"
 		return True
 
-	@QtCore.Slot()
-	def compute(self):
-		print 'SpecificWorker.compute...'
-		#computeCODE
-		#try:
-		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
-		#except Ice.Exception, e:
-		#	traceback.print_exc()
-		#	print e
-
-		# The API of python-innermodel is not exactly the same as the C++ version
-		# self.innermodel.updateTransformValues("head_rot_tilt_pose", 0, 0, 0, 1.3, 0, 0)
-		# z = librobocomp_qmat.QVec(3,0)
-		# r = self.innermodel.transform("rgbd", z, "laser")
-		# r.printvector("d")
-		# print r[0], r[1], r[2]
-
-		return True
+[[[cog
+if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+	cog.outl("<TABHERE>@QtCore.Slot()")
+	cog.outl("<TABHERE>def compute(self):")
+	cog.outl("<TABHERE><TABHERE>print 'SpecificWorker.compute...'")
+	cog.outl("<TABHERE><TABHERE>#computeCODE")
+	cog.outl("<TABHERE><TABHERE>#try:")
+	cog.outl("<TABHERE><TABHERE>#<TABHERE>self.differentialrobot_proxy.setSpeedBase(100, 0)")
+	cog.outl("<TABHERE><TABHERE>#except Ice.Exception, e:")
+	cog.outl("<TABHERE><TABHERE>#<TABHERE>traceback.print_exc()")
+	cog.outl("<TABHERE><TABHERE>#<TABHERE>print e")
+	cog.outl("")
+	cog.outl("<TABHERE><TABHERE># The API of python-innermodel is not exactly the same as the C++ version")
+	cog.outl("<TABHERE><TABHERE># self.innermodel.updateTransformValues('head_rot_tilt_pose', 0, 0, 0, 1.3, 0, 0)")
+	cog.outl("<TABHERE><TABHERE># z = librobocomp_qmat.QVec(3,0)")
+	cog.outl("<TABHERE><TABHERE># r = self.innermodel.transform('rgbd', z, 'laser')")
+	cog.outl("<TABHERE><TABHERE># r.printvector('d')")
+	cog.outl("<TABHERE><TABHERE># print r[0], r[1], r[2]")
+	cog.outl("")
+	cog.outl("<TABHERE><TABHERE>return True")
+]]]
+[[[end]]]
 
 [[[cog
 if sm is not 'none':
@@ -123,7 +127,7 @@ if sm is not 'none':
 				if state == 'compute':
 					codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + state + "\")\n<TABHERE><TABHERE>self.compute()\n<TABHERE><TABHERE>pass\n\n"
 			else:
-				codVirtuals += "<TABHERE>#\n<TABHERE># 2sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + state + "\")\n<TABHERE><TABHERE>pass\n\n"
+				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + state + "\")\n<TABHERE><TABHERE>pass\n\n"
 	if sm['machine']['contents']['initialstate'] != "none":
 		if sm['machine']['default']:
 			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>self.initializetocompute.emit()\n<TABHERE><TABHERE>pass\n\n"

@@ -202,7 +202,11 @@ if 'subscribesTo' in component:
 [[[end]]]
 
 public slots:
-	void compute();
+[[[cog
+if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+	cog.outl("<TABHERE>void compute();")
+]]]
+[[[end]]]
 	void initialize(int period);
 [[[cog
 if component['statemachine'] != 'none':

@@ -651,9 +651,11 @@ if component['statemachine'] != 'none':
     cog.outl("//Slots funtion State Machine")
     cog.outl(sm_virtual_methods)
     cog.outl("//-------------------------")
+
+if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+    cog.outl("<TABHERE>virtual void compute() = 0;")
 ]]]
 [[[end]]]
-    virtual void compute() = 0;
     virtual void initialize(int period) = 0;
 	
 signals:

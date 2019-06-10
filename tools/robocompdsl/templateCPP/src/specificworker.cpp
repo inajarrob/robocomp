@@ -241,21 +241,27 @@ if component['statemachine'] is not 'none' and sm['machine']['default']:
 
 }
 
-void SpecificWorker::compute()
-{
-//computeCODE
-//QMutexLocker locker(mutex);
-//	try
-//	{
-//		camera_proxy->getYImage(0,img, cState, bState);
-//		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-//		searchTags(image_gray);
-//	}
-//	catch(const Ice::Exception &e)
-//	{
-//		std::cout << \"Error reading from Camera\" << e << std::endl;
-//	}
-}
+
+[[[cog
+if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+    cog.outl("void SpecificWorker::compute()")
+    cog.outl("{")
+    cog.outl("//computeCODE")
+    cog.outl("//QMutexLocker locker(mutex);")
+    cog.outl("//<TABHERE>try")
+    cog.outl("//<TABHERE>{")
+    cog.outl("//<TABHERE><TABHERE>camera_proxy->getYImage(0,img, cState, bState);")
+    cog.outl("//<TABHERE><TABHERE>memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));")
+    cog.outl("//<TABHERE><TABHERE>searchTags(image_gray);")
+    cog.outl("//<TABHERE>}")
+    cog.outl("//<TABHERE>catch(const Ice::Exception &e)")
+    cog.outl("//<TABHERE>{")
+    cog.outl("//<TABHERE><TABHERE>std::cout << \"Error reading from Camera\" << e << std::endl;")
+    cog.outl("//<TABHERE>}")
+    cog.outl("}")
+]]]
+[[[end]]]
+
 
 [[[cog
 if component['statemachine'] is not 'none':
