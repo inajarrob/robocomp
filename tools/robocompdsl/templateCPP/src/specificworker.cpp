@@ -241,7 +241,6 @@ if component['statemachine'] is not 'none' and sm['machine']['default']:
 
 }
 
-
 [[[cog
 if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
     cog.outl("void SpecificWorker::compute()")
@@ -261,7 +260,6 @@ if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or
     cog.outl("}")
 ]]]
 [[[end]]]
-
 
 [[[cog
 if component['statemachine'] is not 'none':
