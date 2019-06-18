@@ -29,11 +29,11 @@ class SMDSLparsing:
         # Open input file
         # inputText = "\n".join([line for line in open(filename, 'r').read().split("\n") if not line.lstrip(" \t").startswith('//')])
         if filename == "none":
-            return "none"
+            return None
         try:
             inputText = open(filename, 'r').read()
         except:
-            return "none"
+            return None
         try:
             ret = SMDSLparsing.fromString(inputText)
         except:

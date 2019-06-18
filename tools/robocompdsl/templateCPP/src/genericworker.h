@@ -16,7 +16,7 @@ from parseCDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 sm = SMDSLparsing.fromFile(component['statemachine'])
-if sm is 'none':
+if sm is None:
     component['statemachine'] = 'none'
 if component == None:
 	print('Can\'t locate', theCDSLs)
@@ -73,7 +73,7 @@ if component['gui'] != 'none':
 ]]]
 [[[end]]]
 [[[cog
-if component['statemachine'] != 'none':
+if sm is not None:
 	cog.outl("#include <QStateMachine>")
 	cog.outl("#include <QState>")
 ]]]
@@ -487,7 +487,7 @@ if 'subscribesTo' in component:
 
 protected:
 [[[cog
-if sm is not "none":
+if sm is not None:
     codQState = ""
     codQStateMachine = ""
     lsstates = ""
@@ -630,7 +630,7 @@ private:
 
 public slots:
 [[[cog
-if component['statemachine'] != 'none':
+if sm is not None:
     sm_virtual_methods = ""
     if sm['machine']['contents']['states'] is not "none":
         for state in sm['machine']['contents']['states']:
@@ -652,7 +652,7 @@ if component['statemachine'] != 'none':
     cog.outl(sm_virtual_methods)
     cog.outl("//-------------------------")
 
-if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
     cog.outl("<TABHERE>virtual void compute() = 0;")
 ]]]
 [[[end]]]
@@ -661,7 +661,7 @@ if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or
 signals:
 	void kill();
 [[[cog
-if component['statemachine'] != 'none':
+if sm is not None:
     codsignals = ""
     if sm['machine']['contents']['transitions'] != "none":
         for transi in sm['machine']['contents']['transitions']:

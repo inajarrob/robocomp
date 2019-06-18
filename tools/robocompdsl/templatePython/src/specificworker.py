@@ -71,7 +71,7 @@ class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
 [[[cog
-if sm is 'none':
+if sm is None:
 	cog.outl("<TABHERE><TABHERE>self.timer.timeout.connect(self.compute)")
 ]]]
 [[[end]]]
@@ -79,7 +79,7 @@ if sm is 'none':
 		self.timer.start(self.Period)
 
 [[[cog
-if sm is not "none":
+if sm is not None:
 	cog.outl("<TABHERE><TABHERE>self." + sm['machine']['name'] + ".start()")
 	if sm['machine']['default']:
 		cog.outl("<TABHERE><TABHERE>self.destroyed.connect(self.computetofinalize)")
@@ -98,7 +98,7 @@ if sm is not "none":
 		return True
 
 [[[cog
-if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
 	cog.outl("<TABHERE>@QtCore.Slot()")
 	cog.outl("<TABHERE>def compute(self):")
 	cog.outl("<TABHERE><TABHERE>print 'SpecificWorker.compute...'")
@@ -121,7 +121,7 @@ if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or
 [[[end]]]
 
 [[[cog
-if sm is not 'none':
+if sm is not None:
 	codVirtuals = ""
 
 	# Generate code for the methods of the StateMachine.
@@ -153,11 +153,11 @@ if sm is not 'none':
 			if substates['contents']['finalstate'] != "none":
 				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['finalstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['finalstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+substates['contents']['finalstate']+"\")\n<TABHERE><TABHERE>pass\n\n"
 
-	cog.outl("# =============== Slots funtion State Machine =======================")
+	cog.outl("# =============== Slots methods for State Machine ===================")
 	cog.outl("# ===================================================================")
 	cog.outl(codVirtuals)
 	cog.outl("# =================================================================")
-	cog.outl("# =================================================================")
+	cog.outl("# =================================================================\n")
 ]]]
 [[[end]]]
 [[[cog
@@ -219,8 +219,8 @@ for imp in lst:
 					cog.out("]\n\n")
 
 if component['implements']:
-	cog.out("# =============== Methods for Component Implements ==================\n")
-	cog.out("# ===================================================================\n")
+	cog.outl("# =============== Methods for Component Implements ==================")
+	cog.outl("# ===================================================================")
 	for imp in sorted(component['implements']):
 		if type(imp) == str:
 			im = imp
@@ -282,7 +282,7 @@ if component['implements']:
 								if first:
 									first = False
 							cog.out("]\n\n")
-	cog.out("# ===================================================================\n")
-	cog.out("# ===================================================================\n")
+	cog.outl("# ===================================================================")
+	cog.outl("# ===================================================================\n")
 ]]]
 [[[end]]]

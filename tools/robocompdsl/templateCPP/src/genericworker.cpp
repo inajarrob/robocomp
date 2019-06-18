@@ -17,7 +17,7 @@ from parseCDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 sm = SMDSLparsing.fromFile(component['statemachine'])
-if sm is 'none':
+if sm is None:
     component['statemachine'] = 'none'
 if component == None:
 	print('Can\'t locate', theCDSLs)
@@ -77,7 +77,7 @@ else:
 {
 
 [[[cog
-if component['statemachine'] != 'none':
+if sm is not None:
     codaddTransition = ""
     codaddState = ""
     codConnect = ""
@@ -224,7 +224,7 @@ if component['gui'] != 'none':
 [[[end]]]
 	Period = BASIC_PERIOD;
 [[[cog
-if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
 	cog.outl("<TABHERE>connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
 ]]]
 [[[end]]]

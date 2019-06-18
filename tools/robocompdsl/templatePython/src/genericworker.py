@@ -276,7 +276,7 @@ Z()
 
 	kill = QtCore.Signal()
 [[[cog
-if sm != 'none':
+if sm is not None:
     codsignals = ""
     if sm['machine']['contents']['transitions'] != "none":
         for transi in sm['machine']['contents']['transitions']:
@@ -343,12 +343,11 @@ Z()
 		self.timer = QtCore.QTimer(self)
 
 [[[cog
-if sm != 'none':
+if sm is not None:
 	codStateMachine = ""
 	codQState = ""
 	codQStateParallel = ""
 	codQFinalState = ""
-
 	Machine = sm['machine']['name']
 	codStateMachine = "<TABHERE><TABHERE>self." + Machine + "= QtCore.QStateMachine()"
 
@@ -474,7 +473,7 @@ if sm != 'none':
 [[[end]]]
 
 [[[cog
-if sm != 'none':
+if sm is not None:
 	codVirtuals = ""
 	codcompsubclas = ""
 	for state in sm['machine']['contents']['states']:

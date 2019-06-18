@@ -17,7 +17,7 @@ from parseSMDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 sm = SMDSLparsing.fromFile(component['statemachine'])
-if sm is 'none':
+if sm is None:
     component['statemachine'] = 'none'  
 if component == None:
 	print('Can\'t locate', theCDSLs)
@@ -170,7 +170,7 @@ SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
 [[[cog
-if component['statemachine'] is not 'none' and sm['machine']['default']:
+if sm is not None and sm['machine']['default']:
 	cog.outl("<TABHERE>emit computetofinalize();")
 ]]]
 [[[end]]]
@@ -199,7 +199,7 @@ if component['innermodelviewer']:
 [[[end]]]
 
 [[[cog
-if component['statemachine'] != 'none':
+if sm is not None:
     cog.outl("<TABHERE>" + sm['machine']['name'] + ".start();")
 ]]]
 [[[end]]]
@@ -234,7 +234,7 @@ void SpecificWorker::initialize(int period)
 	this->Period = period;
 	timer.start(Period);
 [[[cog
-if component['statemachine'] is not 'none' and sm['machine']['default']:
+if sm is not None and sm['machine']['default']:
     cog.outl("<TABHERE>emit this->initializetocompute();")
     ]]]
 [[[end]]]
@@ -242,7 +242,7 @@ if component['statemachine'] is not 'none' and sm['machine']['default']:
 }
 
 [[[cog
-if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
     cog.outl("void SpecificWorker::compute()")
     cog.outl("{")
     cog.outl("//computeCODE")
@@ -262,7 +262,7 @@ if (component['statemachine'] != 'none' and sm['machine']['default'] is True) or
 [[[end]]]
 
 [[[cog
-if component['statemachine'] is not 'none':
+if sm is not None:
 	sm_implementation = "\n"
 	if sm['machine']['contents']['states'] is not "none":
 		for state in sm['machine']['contents']['states']:
