@@ -216,12 +216,12 @@ for imp in lst:
 						cog.out(v[1])
 						if first:
 							first = False
-					cog.out("]\n")
+					cog.out("]\n\n")
 
 if component['implements']:
-	cog.out("# =============== Methods for Component Implements ==================")
-	cog.out("# ===================================================================")
-	for imp in component['implements']:
+	cog.out("# =============== Methods for Component Implements ==================\n")
+	cog.out("# ===================================================================\n")
+	for imp in sorted(component['implements']):
 		if type(imp) == str:
 			im = imp
 		else:
@@ -260,7 +260,7 @@ if component['implements']:
 						cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
 						if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
 						cog.outl("<TABHERE><TABHERE>#")
-						cog.outl("<TABHERE><TABHERE>#implementCODE")
+						cog.outl("<TABHERE><TABHERE># implementCODE")
 						cog.outl("<TABHERE><TABHERE>#")
 						if len(outValues) == 0:
 							cog.outl("<TABHERE><TABHERE>pass\n")
@@ -281,8 +281,8 @@ if component['implements']:
 								cog.out(v[1])
 								if first:
 									first = False
-							cog.out("]\n")
-	cog.out("# =============== Methods for Component Implements ==================")
-	cog.out("# ===================================================================")
+							cog.out("]\n\n")
+	cog.out("# ===================================================================\n")
+	cog.out("# ===================================================================\n")
 ]]]
 [[[end]]]
